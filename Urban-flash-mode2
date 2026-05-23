@@ -1,0 +1,59 @@
+#include <FastLED.h> 
+
+#define LED_PIN -- //edo prepei na baloume to sosto pin
+#define NUM_LEDS 31 
+#define BRIGHTNESS 255 
+#define LED_TYPE WS2811 
+#define COLOR_ORDER GRB
+
+CRGB leds[NUM_LEDS];
+
+unsigned long teleftaiaAlagi = 0;
+const unsigned long xronosAnaLed = 12;  // Xronos gia kathe LED ms
+const unsigned long xronosSbisto = 400; // Xronos pou menei sbisto sto telos ms
+
+int trexonLed = 0; 
+bool anamonh = false; 
+
+void setup() {
+  delay(3000);
+
+  // Arxikopoisi led
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(BRIGHTNESS);
+  
+  // Ksekinaei sbysti
+  fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+  FastLED.show();
+}
+
+void loop() {
+  unsigned long time = millis();
+
+  // Otan to flash "trexei"
+  if (anamonh == false) {
+    if (time - teleftaiaAlagi >= xronosAnaLed) {
+      teleftaiaAlagi = time; 
+
+      leds[trexonLed] = CRGB(255, 150, 0); 
+      FastLED.show();
+      trexonLed++; 
+
+      if (trexonLed >= NUM_LEDS) {
+        anamonh = true; 
+        teleftaiaAlagi = millis(); 
+      }
+    }
+  } 
+  // Fasi Anamonis
+  else {
+    if (time - teleftaiaAlagi >= xronosSbisto) {
+      fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0)); 
+      FastLED.show();
+      
+      trexonLed = 0; 
+      anamonh = false; 
+      teleftaiaAlagi = millis(); 
+    }
+  }
+}
