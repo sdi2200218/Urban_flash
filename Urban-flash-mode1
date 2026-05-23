@@ -1,0 +1,43 @@
+#include <FastLED.h>
+
+#define LED_PIN     -- // edo tha prepei na mpei to katalilo pin 
+#define NUM_LEDS    31 
+#define BRIGHTNESS  255 
+#define LED_TYPE    WS2811 
+#define COLOR_ORDER GRB
+
+
+CRGB leds[NUM_LEDS];
+
+unsigned long teleftaiaAlagi = 0;
+const unsigned long diarkeia = 400; //ta flash tha einai anoixta gia 400ms
+bool flash = false; //flag gia na vlepoume pote einai On - Off
+
+void setup() {
+  delay(3000);
+
+  //arxikopoisi led
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(BRIGHTNESS);
+
+}
+
+void loop() {
+  unsigned long time = millis();
+
+  if (time - teleftaiaAlagi >= diarkeia){
+
+    teleftaiaAlagi = time;
+    flash = !flash;
+
+    if(flash == true){
+      fill_solid(leds, NUM_LEDS, CRGB(255, 179, 0)); //anoixe to flash!   alli apoxrosi portokali (255, 95, 21)
+    }
+    else{
+      fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0)); //svise tin ledotainia
+    }
+
+    FastLED.show();
+  }
+
+}
